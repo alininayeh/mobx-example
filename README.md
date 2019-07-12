@@ -89,6 +89,8 @@ For this example the setup that I did was:
               "react-app"
             ]
         }
+        
+## Find out more
 
 My example is very simple and covers only the basics of MobX. For more info you can check:
 
