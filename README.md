@@ -69,6 +69,13 @@ The same applies to the following. If the message preview is clicked, the messag
         <p>{message.description}</p>
       </div>
     ));
+    
+## Running the example
+
+This is a **create-react-app** project, so you just need to do:
+
+    npm install
+    npm start
 
 ## Setting it up
 
@@ -91,8 +98,6 @@ For this example the setup that I did was:
               "react-app"
             ]
         }
-        
-- You can run the project by running **npm start**
         
 ## Find out more
 
