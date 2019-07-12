@@ -2,6 +2,8 @@
 
 This is a small example to help better understand how MobX works. The idea behind it is very simple and we get rid of extra code that is needed to be written, like in Redux implementations for example.
 
+Before reading this you should be familiar with React (https://reactjs.org/) and how the state of a component is managed (https://reactjs.org/docs/state-and-lifecycle.html).
+
 ## What is MobX?
 
 MobX is a state management solution, like Redux or Flux. Their main philosophy is that *"Anything that can be derived from the application state, should be derived. Automatically."*
