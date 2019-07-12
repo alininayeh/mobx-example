@@ -76,19 +76,19 @@ For this example the setup that I did was:
 - Run **npm run eject**
 - Install **mobx**, **mobx-react** and **@babel/plugin-proposal-decorators** (for enabling the decorator synthax):
 
-    npm install mobx mobx-react --save
-    npm install @babel/plugin-proposal-decorators --save-dev
+        npm install mobx mobx-react --save
+        npm install @babel/plugin-proposal-decorators --save-dev
     
 - Add the following config as the last option of package.json:
 
-    "babel": {
-        "plugins": [
-          ["@babel/plugin-proposal-decorators", {"legacy": true}]
-        ],
-        "presets": [
-          "react-app"
-        ]
-    }
+        "babel": {
+            "plugins": [
+              ["@babel/plugin-proposal-decorators", {"legacy": true}]
+            ],
+            "presets": [
+              "react-app"
+            ]
+        }
 
 My example is very simple and covers only the basics of MobX. For more info you can check:
 
