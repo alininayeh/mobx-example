@@ -1,68 +1,95 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Mobx example
 
-## Available Scripts
+This is a small example to help better understand how MobX works. The idea behind it is very simple and we get rid of extra code that is needed to be written, like in Redux implementations for example.
 
-In the project directory, you can run:
+## What is MobX?
 
-### `npm start`
+MobX is a state management solution, like Redux or Flux. Their main philosophy is that *"Anything that can be derived from the application state, should be derived. Automatically."*
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### MobX's main parts
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+#### The store
 
-### `npm test`
+We have the following class that acts as a store. The messages attribute is where the messages data will be stored, then used by the frontend. Each time the messages attribute will change, the methods marked with the @computed decorator will be called in order to update the functions that use them.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+  // The data for the messages will be kept in this store
+  class MessagesStore {
+    // By adding the @observable decoration we tell the store that this property needs to be checked for changes
+    @observable messages = [];
 
-### `npm run build`
+    // By adding the @computed decoration we make sure that this function will always return the updated value
+    // Also this will be called each time there are changes in the messages list
+    // Think of this like a Redux reducer, but which is called automatically, without needing to dispatch an action
+    @computed get messageCount() {
+      return this.messages.length;
+    }
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    @computed get unreadMessageCount() {
+      return this.messages.filter(message => message.read === false).length;
+    }
+  }
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+#### The reactions (observers)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+A reaction is like a @computed value, but instead of returning a processed value, it does some internal stuff. For example a React component would re-render to show the correct data.
 
-### `npm run eject`
+For example this React component is a reaction. Each time the store's data changes, the component updates:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+    // The component is a "reaction". This means that it will react to the store's data changes, but won't return any value
+    @observer
+    class App extends React.Component {
+      componentDidMount() {
+        // The initial state here is [], as declared in the MessageStore
+        // When changing the props like this, the store will auto-update
+        this.props.store.messages = generateMessages(5);
+      }
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+      render() {
+        // These props will be updated each time there's a change in the store's data that affects these values
+        // messages is not an actual array here, it's a "proxy" that accepts array's methods like map, filter, reduce etc.
+        const {messages, messageCount, unreadMessageCount} = this.props.store;
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+        return (
+          <div className='messages'>
+            <h1>Inbox ({messageCount} messages, {unreadMessageCount} unread messages)</h1>
+            {messages.map((message, i) => <MessagePreview message={message} key={i} />)}
+          </div>
+        );
+      }
+    }
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The same applies to the following. If the message preview is clicked, the message becomes read and the store is updated. Yes, no actions or dispatching of events needed (although if you want to use them, MobX has support for actions too).
 
-## Learn More
+    // We can use also the observer() function like this. For stateless components this is the way to use, since @observer can be used only with classes
+    const MessagePreview = observer(({message}) => (
+      <div className={`message ${!message.read && 'read'}`} onClick={() => message.read = true}>
+        <h2>{message.subject}</h2>
+        <p>{message.description}</p>
+      </div>
+    ));
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Setting it up
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+For this example the setup that I did was:
 
-### Code Splitting
+- Use the create-react-app utility to get a React boilerplate
+- Run **npm run eject**
+- Install **mobx**, **mobx-react** and **@babel/plugin-proposal-decorators** (for enabling the decorator synthax): **npm install mobx mobx-react --save**, **npm install @babel/plugin-proposal-decorators --save-dev**
+- Add the following config as the last option of package.json:
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+  "babel": {
+    "plugins": [
+      ["@babel/plugin-proposal-decorators", {"legacy": true}]
+    ],
+    "presets": [
+      "react-app"
+    ]
+  }
 
-### Analyzing the Bundle Size
+My example is very simple and covers only the basics of MobX. For more info you can check:
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+- The official documentation: https://mobx.js.org/index.html
+- This ten-minute introduction: https://mobx.js.org/getting-started.html
+- This simple example: https://jsfiddle.net/mweststrate/wv3yopo0/
+- This egghead.io course: https://egghead.io/courses/manage-complex-state-in-react-apps-with-mobx
 
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
