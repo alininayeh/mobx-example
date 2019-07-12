@@ -92,6 +92,8 @@ For this example the setup that I did was:
             ]
         }
         
+- You can run the project by running **npm start**
+        
 ## Find out more
 
 My example is very simple and covers only the basics of MobX. For more info you can check:
